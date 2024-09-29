@@ -7,7 +7,13 @@ import java.util.Set;
 
 public class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
+        int cipherChoice = Integer.parseInt(args[0]);
+        int EncOrDec = Integer.parseInt(args[1]);
+        if (args.length != 2 || cipherChoice < 1 || cipherChoice > 6 || (EncOrDec != 1 && EncOrDec != 0)) {
+            throw new IllegalArgumentException("Проверьте входные данные");
+        }
+
         BufferedReader inputReader = null;
         BufferedReader keyReader = null;
         BufferedReader alphabetReader = null;
@@ -34,14 +40,40 @@ public class Main {
                 alphabet = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ ";
             }
 
-            cryptWriter = openBufferedWriter("crypt.txt", true);
-            decryptWriter = openBufferedWriter("decrypt.txt", true);
+            cryptWriter = openBufferedWriter("crypt.txt", false);
+            decryptWriter = openBufferedWriter("decrypt.txt", false);
 
             allTextCheck(alphabet, inputText, key);
-
             Cipher cipher = new Cipher(alphabet, inputText, key);
 
-            System.out.println(cipher.affineDecrypt());
+            switch (cipherChoice) {
+                case 1:
+                    System.out.println("Выбран метод сдвига");
+                    if (EncOrDec == 0) {
+                        cryptWriter.append(cipher.shiftEncrypt());
+                    } else {
+                        decryptWriter.append(cipher.shiftDecrypt());
+                    }
+                    break;
+                case 2:
+                    System.out.println("Выбран аффинный метод");
+                    if (EncOrDec == 0) {
+                        cryptWriter.append(cipher.affineEncrypt());
+                    } else {
+                        decryptWriter.append(cipher.affineDecrypt());
+                    }
+                    break;
+                case 3:
+                    System.out.println("Выбран метод простой замены");
+                    if (EncOrDec == 0) {
+                        cryptWriter.append(cipher.substitutionEncrypt());
+                    } else {
+                        decryptWriter.append(cipher.substitutionDecrypt());
+                    }
+                    break;
+                default:
+                    break;
+            }
 
             System.out.println("Алфавит: " + alphabet);
             System.out.println("Входной текст: " + inputText);
@@ -51,7 +83,7 @@ public class Main {
             System.err.println(e.getMessage());
         } catch (IOException e) {
             System.err.println("Ошибка ввода-вывода: " + e.getMessage());
-        }finally {
+        } finally {
             try {
                 if (inputReader != null) inputReader.close();
                 if (keyReader != null) keyReader.close();

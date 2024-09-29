@@ -1,5 +1,6 @@
 package Ciphers;
 
+
 public class Cipher {
     private String alphabet;
     private String inputText;
@@ -76,6 +77,32 @@ public class Cipher {
         for (int i = 0; i < inputText.length(); i++) {
             int tempIndex = (k1Reverse * (alphabet.indexOf(inputText.charAt(i)) - k2 + alphabet.length())) % alphabet.length();
             result.append(alphabet.charAt(tempIndex));
+        }
+        return result.toString();
+    }
+
+    public String substitutionEncrypt() {
+        if (key.length() != alphabet.length()) {
+            throw new IllegalArgumentException("Текст в файле ключа имеет отличную от алфавита длину.");
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for(int i = 0; i < inputText.length(); i++){
+            result.append(key.charAt(alphabet.indexOf(inputText.charAt(i))));
+        }
+        return result.toString();
+    }
+
+    public String substitutionDecrypt() {
+        if (key.length() != alphabet.length()) {
+            throw new IllegalArgumentException("Текст в файле ключа имеет отличную от алфавита длину.");
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for(int i = 0; i < inputText.length(); i++){
+            result.append(alphabet.charAt(key.indexOf(inputText.charAt(i))));
         }
         return result.toString();
     }
