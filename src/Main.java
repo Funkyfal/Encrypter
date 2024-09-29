@@ -1,3 +1,5 @@
+import Ciphers.Cipher;
+
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -5,69 +7,7 @@ import java.util.Set;
 
 public class Main {
 
-    public static void allTextCheck(String alphabet, String inputText, String key) {
-        Set<Character> alphabetSet = new HashSet<>();
-        for (int i = 0; i < alphabet.length(); i++) {
-            char c = alphabet.charAt(i);
-            if (!alphabetSet.add(c)) {
-                throw new IllegalArgumentException("Алфавит содержит повторяющийся символ: " + c);
-            }
-        }
-
-        for (int i = 0; i < inputText.length(); i++) {
-            char c = inputText.charAt(i);
-            if (!alphabetSet.contains(c)) {
-                throw new IllegalArgumentException("Символ '" + c + "' из файла с текстом не найден в алфавите.");
-            }
-        }
-
-        for (int i = 0; i < key.length(); i++) {
-            char c = key.charAt(i);
-            if (!alphabetSet.contains(c)) {
-                throw new IllegalArgumentException("Символ '" + c + "' из файла с ключом не найден в алфавите.");
-            }
-        }
-    }
-
-    public static String shiftEncrypt(String alphabet, String inputText, String key){
-        if(key.length() != 1){
-            throw new IllegalArgumentException("Ключ состоит не из одного символа.");
-        }
-
-        int index = alphabet.indexOf(key);
-        StringBuilder result = new StringBuilder();
-
-        for(int i = 0; i < inputText.length(); i++){
-            int tempIndex = (alphabet.indexOf(inputText.charAt(i)) + index) % (alphabet.length() - 1);
-            result.append(alphabet.charAt(tempIndex));
-        }
-
-        return result.toString();
-    }
-
-    public static String shiftDecrypt(String alphabet, String inputText, String key){
-        if(key.length() != 1){
-            throw new IllegalArgumentException("Ключ состоит не из одного символа.");
-        }
-
-        int index = alphabet.indexOf(key);
-        StringBuilder result = new StringBuilder();
-
-        for(int i = 0; i < inputText.length(); i++){
-            int tempIndex = alphabet.indexOf(inputText.charAt(i)) - index;
-            if(tempIndex < 0){
-                tempIndex += alphabet.length() - 1;
-            }
-
-            tempIndex %= (alphabet.length() - 1);
-
-            result.append(alphabet.charAt(tempIndex));
-        }
-
-        return result.toString();
-    }
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         BufferedReader inputReader = null;
         BufferedReader keyReader = null;
         BufferedReader alphabetReader = null;
@@ -98,7 +38,10 @@ public class Main {
             decryptWriter = openBufferedWriter("decrypt.txt", true);
 
             allTextCheck(alphabet, inputText, key);
-            System.out.println(shiftDecrypt(alphabet,inputText,key));
+
+            Cipher cipher = new Cipher(alphabet, inputText, key);
+
+            System.out.println(cipher.affineDecrypt());
 
             System.out.println("Алфавит: " + alphabet);
             System.out.println("Входной текст: " + inputText);
@@ -143,5 +86,29 @@ public class Main {
             throw new IOException("Файл " + fileName + " содержит больше одной строки!");
         }
         return line;
+    }
+
+    public static void allTextCheck(String alphabet, String inputText, String key) {
+        Set<Character> alphabetSet = new HashSet<>();
+        for (int i = 0; i < alphabet.length(); i++) {
+            char c = alphabet.charAt(i);
+            if (!alphabetSet.add(c)) {
+                throw new IllegalArgumentException("Алфавит содержит повторяющийся символ: " + c);
+            }
+        }
+
+        for (int i = 0; i < inputText.length(); i++) {
+            char c = inputText.charAt(i);
+            if (!alphabetSet.contains(c)) {
+                throw new IllegalArgumentException("Символ '" + c + "' из файла с текстом не найден в алфавите.");
+            }
+        }
+
+        for (int i = 0; i < key.length(); i++) {
+            char c = key.charAt(i);
+            if (!alphabetSet.contains(c)) {
+                throw new IllegalArgumentException("Символ '" + c + "' из файла с ключом не найден в алфавите.");
+            }
+        }
     }
 }
