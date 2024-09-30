@@ -4,7 +4,20 @@ import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
-
+/*
+* Для того, чтобы запустить программу, для начала нужно выставить нужные аргументы. Первый аргумент
+* есть целое число от 1 до 6. таким образом выбирается один из шифров
+* 1.Цезаря
+* 2.Афинный
+* 3.Простой замены
+* 4.Хилла
+* 5.Перестановки (простой)
+* 6.Виженера
+* Далее идет число 0 или 1, в зависимости от того, хотите Вы зашифровать (0) или расшифровать (1) сообщение.
+* Перед запуском программы нужно написать исходные текст, ключ и алфавит. В случае отсутствия файла с алфавитом
+* будет использоваться алфавит по умолчанию "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ ". В случае других ошибок ввода
+* ключа, текста или самого алфавита, программа будет завершаться с указанием причины закрытия.
+* */
 public class Main {
 
     public static void main(String[] args) {
@@ -51,46 +64,65 @@ public class Main {
                     System.out.println("Выбран метод сдвига");
                     if (EncOrDec == 0) {
                         cryptWriter.append(cipher.shiftEncrypt());
+                        System.out.println("Шифровка...");
                     } else {
                         decryptWriter.append(cipher.shiftDecrypt());
+                        System.out.println("Расшифровка...");
                     }
                     break;
                 case 2:
                     System.out.println("Выбран аффинный метод");
                     if (EncOrDec == 0) {
                         cryptWriter.append(cipher.affineEncrypt());
+                        System.out.println("Шифровка...");
                     } else {
                         decryptWriter.append(cipher.affineDecrypt());
+                        System.out.println("Расшифровка...");
                     }
                     break;
                 case 3:
                     System.out.println("Выбран метод простой замены");
                     if (EncOrDec == 0) {
                         cryptWriter.append(cipher.substitutionEncrypt());
+                        System.out.println("Шифровка...");
                     } else {
                         decryptWriter.append(cipher.substitutionDecrypt());
+                        System.out.println("Расшифровка...");
                     }
                     break;
                 case 4:
                     System.out.println("Выбран метод Хилла");
-                    if(EncOrDec == 0){
+                    if (EncOrDec == 0) {
                         cryptWriter.append(cipher.hillEncrypt());
+                        System.out.println("Шифровка...");
                     } else {
                         decryptWriter.append(cipher.hillDecrypt());
+                        System.out.println("Расшифровка...");
                     }
                     break;
                 case 5:
                     System.out.println("Выбран метод перестановки");
-                    if(EncOrDec == 0){
+                    if (EncOrDec == 0) {
                         cryptWriter.append(cipher.permutationEncrypt());
+                        System.out.println("Шифровка...");
                     } else {
                         decryptWriter.append(cipher.permutationDecrypt());
+                        System.out.println("Расшифровка...");
+                    }
+                case 6:
+                    System.out.println("Выбран метод Виженера");
+                    if (EncOrDec == 0) {
+                        cryptWriter.append(cipher.vigenereEncrypt());
+                        System.out.println("Шифровка...");
+                    } else {
+                        decryptWriter.append(cipher.vigenereDecrypt());
+                        System.out.println("Расшифровка...");
                     }
                 default:
                     break;
             }
 
-            System.out.println("Алфавит: " + alphabet);
+            System.out.println("Используемый алфавит: " + alphabet);
             System.out.println("Входной текст: " + inputText);
             System.out.println("Ключ: " + key);
 
@@ -109,6 +141,7 @@ public class Main {
                 System.err.println("Ошибка закрытия файлов: " + e.getMessage());
             }
         }
+        System.out.println("Программа завершена успешно");
     }
 
     public static BufferedReader openBufferedReader(String fileName) throws IOException {

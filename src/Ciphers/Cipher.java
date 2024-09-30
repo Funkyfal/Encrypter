@@ -258,6 +258,44 @@ public class Cipher {
         return keysFinal;
     }
 
+    public String vigenereEncrypt() {
+        int beginKeyLength = key.length();
+        int j = 0;
+        while (key.length() < inputText.length()) {
+            if (j == beginKeyLength) {
+                j = 0;
+            }
+            key += key.charAt(j);
+            j++;
+        }
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < inputText.length(); i++) {
+            result.append(alphabet.charAt((alphabet.indexOf(inputText.charAt(i)) + alphabet.indexOf(key.charAt(i))) % M));
+        }
+
+        return result.toString();
+    }
+
+    public String vigenereDecrypt() {
+        int beginKeyLength = key.length();
+        int j = 0;
+        while (key.length() < inputText.length()) {
+            if (j == beginKeyLength) {
+                j = 0;
+            }
+            key += key.charAt(j);
+            j++;
+        }
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < inputText.length(); i++) {
+            result.append(alphabet.charAt((alphabet.indexOf(inputText.charAt(i)) - alphabet.indexOf(key.charAt(i)) + M) % M));
+        }
+
+        return result.toString();
+    }
+
     private int reverseNumber(int a, int m) {
         for (int x = 1; x < m; x++) {
             if ((a * x) % m == 1) {
