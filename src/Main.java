@@ -79,6 +79,13 @@ public class Main {
                         decryptWriter.append(cipher.hillDecrypt());
                     }
                     break;
+                case 5:
+                    System.out.println("Выбран метод перестановки");
+                    if(EncOrDec == 0){
+                        cryptWriter.append(cipher.permutationEncrypt());
+                    } else {
+                        decryptWriter.append(cipher.permutationDecrypt());
+                    }
                 default:
                     break;
             }

@@ -1,6 +1,8 @@
 package Ciphers;
 
 
+import java.util.*;
+
 import static java.lang.Math.abs;
 
 public class Cipher {
@@ -180,6 +182,80 @@ public class Cipher {
             throw new IllegalArgumentException("Длина текста в key.txt != 4");
         }
         return det;
+    }
+
+    public String permutationEncrypt() {
+        permutationCheck();
+        Vector<Integer> keys = permutationPrepare();
+        int neededSymbols = (inputText.length() % key.length() == 0) ? 0 : key.length()
+                - inputText.length() % key.length();
+        for (int i = 0; i < neededSymbols; i++) {
+            inputText += alphabet.charAt(0);
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < inputText.length(); i += key.length()) {
+            String temp = inputText.substring(i, key.length() + i);
+            for (int j = 0; j < key.length(); j++) {
+                result.append(temp.charAt(keys.get(j) - 1));
+            }
+        }
+        return result.toString();
+    }
+
+    public String permutationDecrypt() {
+        permutationCheck();
+        Vector<Integer> keys = permutationPrepare();
+        int neededSymbols = (inputText.length() % key.length() == 0) ? 0 : key.length()
+                - inputText.length() % key.length();
+        for (int i = 0; i < neededSymbols; i++) {
+            inputText += alphabet.charAt(0);
+        }
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < inputText.length(); i += key.length()) {
+            String temp = inputText.substring(i, key.length() + i);
+            char[] decryptedBlock = new char[key.length()];
+            for (int j = 0; j < key.length(); j++) {
+                decryptedBlock[keys.get(j) - 1] = temp.charAt(j);
+            }
+            result.append(new String(decryptedBlock));
+        }
+
+        return result.toString();
+    }
+
+
+    public void permutationCheck() {
+        if (key.length() > M) {
+            throw new IllegalArgumentException("Длина ключа больше длины алфавита.");
+        }
+        Set<Character> keySet = new HashSet<>();
+        for (int i = 0; i < key.length(); i++) {
+            char c = key.charAt(i);
+            if (!keySet.add(c)) {
+                throw new IllegalArgumentException("Ключ содержит повторяющийся символ: " + c);
+            }
+        }
+    }
+
+    public Vector<Integer> permutationPrepare() {
+        Vector<Integer> keys = new Vector<>();
+        Set<Integer> keySet = new TreeSet<>();
+        Vector<Integer> keysFinal = new Vector<>();
+        for (int i = 0; i < key.length(); i++) {
+            keySet.add(alphabet.indexOf(key.charAt(i)));
+        }
+        for (int i = 0; i < key.length(); i++) {
+            keys.add(alphabet.indexOf(key.charAt(i)));
+        }
+        List<Integer> sortedKeyList = new ArrayList<>(keySet);
+        for (int keyIndex : keys) {
+            int sortedIndex = sortedKeyList.indexOf(keyIndex);
+            keysFinal.add(sortedIndex + 1);
+        }
+        return keysFinal;
     }
 
     private int reverseNumber(int a, int m) {
