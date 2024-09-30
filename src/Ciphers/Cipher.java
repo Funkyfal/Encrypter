@@ -1,15 +1,19 @@
 package Ciphers;
 
 
+import static java.lang.Math.abs;
+
 public class Cipher {
     private String alphabet;
     private String inputText;
     private String key;
+    private final int M;
 
     public Cipher(String alphabet, String inputText, String key) {
         this.alphabet = alphabet;
         this.key = key;
         this.inputText = inputText;
+        M = alphabet.length();
     }
 
     public String shiftEncrypt() {
@@ -21,7 +25,7 @@ public class Cipher {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < inputText.length(); i++) {
-            int tempIndex = (alphabet.indexOf(inputText.charAt(i)) + index) % alphabet.length();
+            int tempIndex = (alphabet.indexOf(inputText.charAt(i)) + index) % M;
             result.append(alphabet.charAt(tempIndex));
         }
 
@@ -37,7 +41,7 @@ public class Cipher {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < inputText.length(); i++) {
-            int tempIndex = (alphabet.indexOf(inputText.charAt(i)) - index + alphabet.length()) % alphabet.length();
+            int tempIndex = (alphabet.indexOf(inputText.charAt(i)) - index + M) % M;
             result.append(alphabet.charAt(tempIndex));
         }
 
@@ -45,7 +49,7 @@ public class Cipher {
     }
 
     public String affineEncrypt() {
-        if (key.length() != 2 || GCD(alphabet.indexOf(key.charAt(0)), alphabet.length()) != 1) {
+        if (key.length() != 2 || GCD(alphabet.indexOf(key.charAt(0)), M) != 1) {
             throw new IllegalArgumentException("Либо неверна длина ключа(должна быть 2), либо первый символ ключа" +
                     "не взаимно прост с длиной алфавита.");
         }
@@ -55,7 +59,7 @@ public class Cipher {
         int k2 = alphabet.indexOf(key.charAt(1));
 
         for (int i = 0; i < inputText.length(); i++) {
-            int tempIndex = ((alphabet.indexOf(inputText.charAt(i)) * k1) + k2) % alphabet.length();
+            int tempIndex = ((alphabet.indexOf(inputText.charAt(i)) * k1) + k2) % M;
             result.append(alphabet.charAt(tempIndex));
         }
 
@@ -63,7 +67,7 @@ public class Cipher {
     }
 
     public String affineDecrypt() {
-        if (key.length() != 2 || GCD(alphabet.indexOf(key.charAt(0)), alphabet.length()) != 1) {
+        if (key.length() != 2 || GCD(alphabet.indexOf(key.charAt(0)), M) != 1) {
             throw new IllegalArgumentException("Либо неверна длина ключа(должна быть 2), либо первый символ ключа" +
                     "не взаимно прост с длиной алфавита.");
         }
@@ -72,39 +76,110 @@ public class Cipher {
         int k1 = alphabet.indexOf(key.charAt(0));
         int k2 = alphabet.indexOf(key.charAt(1));
 
-        int k1Reverse = reverseNumber(k1, alphabet.length());
+        int k1Reverse = reverseNumber(k1, M);
 
         for (int i = 0; i < inputText.length(); i++) {
-            int tempIndex = (k1Reverse * (alphabet.indexOf(inputText.charAt(i)) - k2 + alphabet.length())) % alphabet.length();
+            int tempIndex = (k1Reverse * (alphabet.indexOf(inputText.charAt(i)) - k2 + M)) % M;
             result.append(alphabet.charAt(tempIndex));
         }
         return result.toString();
     }
 
     public String substitutionEncrypt() {
-        if (key.length() != alphabet.length()) {
+        if (key.length() != M) {
             throw new IllegalArgumentException("Текст в файле ключа имеет отличную от алфавита длину.");
         }
 
         StringBuilder result = new StringBuilder();
 
-        for(int i = 0; i < inputText.length(); i++){
+        for (int i = 0; i < inputText.length(); i++) {
             result.append(key.charAt(alphabet.indexOf(inputText.charAt(i))));
         }
         return result.toString();
     }
 
     public String substitutionDecrypt() {
-        if (key.length() != alphabet.length()) {
+        if (key.length() != M) {
             throw new IllegalArgumentException("Текст в файле ключа имеет отличную от алфавита длину.");
         }
 
         StringBuilder result = new StringBuilder();
 
-        for(int i = 0; i < inputText.length(); i++){
+        for (int i = 0; i < inputText.length(); i++) {
             result.append(alphabet.charAt(key.indexOf(inputText.charAt(i))));
         }
         return result.toString();
+    }
+
+    public String hillEncrypt() {
+        int det = hillKeyCheck();
+        int k11 = alphabet.indexOf(key.charAt(0));
+        int k12 = alphabet.indexOf(key.charAt(1));
+        int k21 = alphabet.indexOf(key.charAt(2));
+        int k22 = alphabet.indexOf(key.charAt(3));
+
+        if (inputText.length() % 2 == 1) {
+            inputText += alphabet.charAt(0);
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 1; i < inputText.length(); i += 2) {
+            int firstSymbol = alphabet.indexOf(inputText.charAt(i - 1));
+            int secondSymbol = alphabet.indexOf(inputText.charAt(i));
+            result.append(alphabet.charAt((firstSymbol * k11 + secondSymbol * k21) % M));
+            result.append(alphabet.charAt((firstSymbol * k12 + secondSymbol * k22) % M));
+        }
+        return result.toString();
+    }
+
+    public String hillDecrypt() {
+        int detR = reverseNumber(hillKeyCheck(), M);
+        int k11R = (detR * alphabet.indexOf(key.charAt(3)) + M) % M;
+        int k12R = (detR * (-alphabet.indexOf(key.charAt(1)) + M)) % M;
+        int k21R = (detR * (-alphabet.indexOf(key.charAt(2)) + M)) % M;
+        int k22R = (detR * alphabet.indexOf(key.charAt(0)) + M) % M;
+
+        if (inputText.length() % 2 == 1) {
+            inputText += alphabet.charAt(0);
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 1; i < inputText.length(); i += 2) {
+            int firstSymbol = alphabet.indexOf(inputText.charAt(i - 1));
+            int secondSymbol = alphabet.indexOf(inputText.charAt(i));
+            result.append(alphabet.charAt((firstSymbol * k11R + secondSymbol * k21R) % M));
+            result.append(alphabet.charAt((firstSymbol * k12R + secondSymbol * k22R) % M));
+        }
+        return result.toString();
+    }
+
+    public int hillKeyCheck() {
+        int k11, k12, k21, k22, det;
+        if (key.length() == 4) {
+            k11 = alphabet.indexOf(key.charAt(0));
+            k12 = alphabet.indexOf(key.charAt(1));
+            k21 = alphabet.indexOf(key.charAt(2));
+            k22 = alphabet.indexOf(key.charAt(3));
+            det = (((k11 * k22) % M) - ((k12 * k21) % M) + M) % M;
+
+            if (det == 0) {
+                throw new IllegalArgumentException("Матрица, состоящая из номеров символов в алфавите является" +
+                        " вырожденной. Реализация метода невозможна.");
+            }
+            if (GCD(abs(det), M) != 1) {
+                throw new IllegalArgumentException("Определитель матрицы не взаимно прост с длиной алфавита");
+            }
+            try {
+                int detReverse = reverseNumber(det, M);
+            } catch (IllegalArgumentException e) {
+                System.err.println(e.getMessage() + ". Проверьте правильность ключа.");
+            }
+        } else {
+            throw new IllegalArgumentException("Длина текста в key.txt != 4");
+        }
+        return det;
     }
 
     private int reverseNumber(int a, int m) {
@@ -113,8 +188,7 @@ public class Cipher {
                 return x;
             }
         }
-        throw new IllegalArgumentException();
-        //случая с исключением не будет, но без обработки исключения не будет работать функция
+        throw new IllegalArgumentException("Невозможно подобрать обратное значение в кольце вычетов по модулю " + m);
     }
 
     public static int GCD(int a, int b) {

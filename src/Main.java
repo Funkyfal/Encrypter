@@ -71,6 +71,14 @@ public class Main {
                         decryptWriter.append(cipher.substitutionDecrypt());
                     }
                     break;
+                case 4:
+                    System.out.println("Выбран метод Хилла");
+                    if(EncOrDec == 0){
+                        cryptWriter.append(cipher.hillEncrypt());
+                    } else {
+                        decryptWriter.append(cipher.hillDecrypt());
+                    }
+                    break;
                 default:
                     break;
             }
