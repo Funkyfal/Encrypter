@@ -156,7 +156,6 @@ public class Cipher {
         }
         return result.toString();
     }
-
     public int hillKeyCheck() {
         int k11, k12, k21, k22, det;
         if (key.length() == 4) {
@@ -192,9 +191,7 @@ public class Cipher {
         for (int i = 0; i < neededSymbols; i++) {
             inputText += alphabet.charAt(0);
         }
-
         StringBuilder result = new StringBuilder();
-
         for (int i = 0; i < inputText.length(); i += key.length()) {
             String temp = inputText.substring(i, key.length() + i);
             for (int j = 0; j < key.length(); j++) {
@@ -203,7 +200,6 @@ public class Cipher {
         }
         return result.toString();
     }
-
     public String permutationDecrypt() {
         permutationCheck();
         Vector<Integer> keys = permutationPrepare();
@@ -213,7 +209,6 @@ public class Cipher {
             inputText += alphabet.charAt(0);
         }
         StringBuilder result = new StringBuilder();
-
         for (int i = 0; i < inputText.length(); i += key.length()) {
             String temp = inputText.substring(i, key.length() + i);
             char[] decryptedBlock = new char[key.length()];
@@ -222,7 +217,6 @@ public class Cipher {
             }
             result.append(new String(decryptedBlock));
         }
-
         return result.toString();
     }
 

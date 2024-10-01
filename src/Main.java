@@ -109,6 +109,7 @@ public class Main {
                         decryptWriter.append(cipher.permutationDecrypt());
                         System.out.println("Расшифровка...");
                     }
+                    break;
                 case 6:
                     System.out.println("Выбран метод Виженера");
                     if (EncOrDec == 0) {
@@ -118,6 +119,7 @@ public class Main {
                         decryptWriter.append(cipher.vigenereDecrypt());
                         System.out.println("Расшифровка...");
                     }
+                    break;
                 default:
                     break;
             }
